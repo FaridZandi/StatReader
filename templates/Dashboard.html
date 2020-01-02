@@ -78,7 +78,7 @@
             var val_holder = $(this).parent().prev().prev().prev().prev().prev().children().eq(1);
             var time_holder = $(this).parent().prev().prev().prev().prev();
             $.ajax({
-                url: "http://statreader.herokuapp.com/update/stat?id=" + stat_id,
+                url: "http://statreader.herokuapp.com/stat/update?id=" + stat_id,
                 success: function(Data){
                     console.log(Data);
                     val_holder.html(Data.value);
