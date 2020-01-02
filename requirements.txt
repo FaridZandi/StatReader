@@ -9,3 +9,4 @@ requests==2.22.0
 scapy==2.4.3
 shellescape==3.4.1
 whitenoise==5.0.1
+django-heroku-0.3.1
