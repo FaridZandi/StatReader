@@ -73,15 +73,16 @@
 
     <script>
         $(".refresh_button").click(function () {
-            console.log($(this).attr("data-stat-id"));
+            var stat_id = $(this).attr("data-stat-id");
 
             var val_holder = $(this).parent().prev().prev().prev().prev().prev().children().eq(1);
             var time_holder = $(this).parent().prev().prev().prev().prev();
             $.ajax({
-                url: "http://statreader.herokuapp.com/admin/Core/stat/{{stat.id}}/change/",
+                url: "http://statreader.herokuapp.com/admin/Core/stat/" + stat_id + "/change/",
                 success: function(Data){
                     console.log(Data);
                     val_holder.html(Data.value);
+                    time_holder.html("just now");
                 }
             });
         })
