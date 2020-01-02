@@ -74,15 +74,21 @@
     <script>
         $(".refresh_button").click(function () {
             var stat_id = $(this).attr("data-stat-id");
-
+            var link_holder = $(this);
             var val_holder = $(this).parent().prev().prev().prev().prev().prev().children().eq(1);
             var time_holder = $(this).parent().prev().prev().prev().prev();
+
+            link_holder.html("loading...");
             $.ajax({
                 url: "http://statreader.herokuapp.com/stat/update?id=" + stat_id,
                 success: function(Data){
                     console.log(Data);
+                    link_holder.html("refresh");
                     val_holder.html(Data.value);
                     time_holder.html("0 minutes ago");
+                },
+                error: function(a, b , c){
+                    link_holder.html("refresh");
                 }
             });
         })
