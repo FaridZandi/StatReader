@@ -18,7 +18,10 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["my_stats"] = self.request.user.subscribed_stats.all()
+        # if self.request.is_authenticated():
+        #     context["my_stats"] = self.request.user.subscribed_stats.all()
+        # else:
+        context["my_stats"] = Stat.objects.all()
 
         return context
 
