@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a74b90c4-57c5-4d2b-be79-05cfe71d7ddd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Core/views.py" afterDir="false" />
-    </list>
+    <list default="true" id="a74b90c4-57c5-4d2b-be79-05cfe71d7ddd" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,7 +148,7 @@
       <updated>1577951333501</updated>
       <workItem from="1577951334759" duration="2384000" />
       <workItem from="1577953808358" duration="1917000" />
-      <workItem from="1577959023285" duration="32306000" />
+      <workItem from="1577959023285" duration="32999000" />
     </task>
     <task id="LOCAL-00001" summary="added urls.py">
       <created>1577955040029</created>

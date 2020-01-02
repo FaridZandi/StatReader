@@ -44,3 +44,6 @@ class Stat(models.Model):
         self.modified = timezone.now()
         return super(Stat, self).save(*args, **kwargs)
 
+    class Meta:
+        ordering = ('-name',)
+
