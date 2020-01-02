@@ -51,7 +51,7 @@
                         {{ stat.get_subscribers_count }}
                     </div>
                     <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                        <a href="{{ stat.url }}"> {{ stat.url|truncatechars:30 }}</a>
+                        <a target="_blank" href="{{ stat.url }}"> {{ stat.url|truncatechars:30 }}</a>
                     </div>
                     <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
                         <a href="http://statreader.herokuapp.com/admin/Core/stat/{{ stat.id }}/change/"> edit </a>
@@ -80,7 +80,7 @@
 
             link_holder.html("loading...");
             $.ajax({
-                url: "http://statreader.herokuapp.com/stat/update?id=" + stat_id,
+                url: "https://statreader.herokuapp.com/stat/update?id=" + stat_id,
                 success: function(Data){
                     console.log(Data);
                     link_holder.html("refresh");
