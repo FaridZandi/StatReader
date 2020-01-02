@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a74b90c4-57c5-4d2b-be79-05cfe71d7ddd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/StatReader.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/StatReader.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/StatReader/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/StatReader/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -91,7 +88,7 @@
       <updated>1577951333501</updated>
       <workItem from="1577951334759" duration="2384000" />
       <workItem from="1577953808358" duration="1917000" />
-      <workItem from="1577959023285" duration="849000" />
+      <workItem from="1577959023285" duration="1162000" />
     </task>
     <task id="LOCAL-00001" summary="added urls.py">
       <created>1577955040029</created>
@@ -100,7 +97,14 @@
       <option name="project" value="LOCAL" />
       <updated>1577955040029</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="fixing static">
+      <created>1577959913375</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1577959913375</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -121,6 +125,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added urls.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="added urls.py" />
+    <MESSAGE value="fixing static" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixing static" />
   </component>
 </project>
