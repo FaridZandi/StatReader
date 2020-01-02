@@ -27,27 +27,39 @@
             </div>
             {% for stat in my_stats %}
                 <div class="row">
-                	<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                		{{ forloop.counter }}
-                	</div>
+                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                        {{ forloop.counter }}
+                    </div>
                     <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    	{{ stat.name }}
+                        {{ stat.name }}
                     </div>
                     <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                        {{ stat.last_value }}
-                        {% if stat.prefix %}
+                        <span>{% if stat.prefix %}
                             {{ stat.prefix }}
-                        {% endif %}
+                        {% endif %}</span>
+
+                        <span>{{ stat.last_value }}</span>
+
+                        <span>{% if stat.suffix %}
+                            {{ stat.suffix }}
+                        {% endif %}</span>
                     </div>
                     <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                        {{ stat.modified|timesince }}
+                        {{ stat.modified|timesince }} ago
                     </div>
                     <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
                         {{ stat.get_subscribers_count }}
                     </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
                         <a href="{{ stat.url }}"> {{ stat.url|truncatechars:30 }}</a>
                     </div>
+                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                        <a href="http://statreader.herokuapp.com/admin/Core/stat/{{ stat.id }}/change/"> edit </a>
+                    </div>
+                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                        <a href="#" data-stat-id="{{ stat.id }}" class="refresh_button"> refresh </a>
+                    </div>
+
                 </div>
             {% endfor %}
         </div>
@@ -57,4 +69,23 @@
 {% endblock %}
 
 
+{% block javascript %}
+
+    <script>
+        $(".refresh_button").click(function () {
+            console.log($(this).attr("data-stat-id"));
+
+            var val_holder = $(this).parent().prev().prev().prev().prev().prev().children().eq(1);
+            var time_holder = $(this).parent().prev().prev().prev().prev();
+            $.ajax({
+                url: "http://statreader.herokuapp.com/admin/Core/stat/{{stat.id}}/change/",
+                success: function(Data){
+                    console.log(Data);
+                    val_holder.html(Data.value);
+                }
+            });
+        })
+    </script>
+
+{% endblock %}
 
