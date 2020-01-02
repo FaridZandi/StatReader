@@ -7,7 +7,12 @@ from django.views import View
 import subprocess
 import sys
 
+from django.views.generic import TemplateView
 from paramiko import SSHClient, AutoAddPolicy
+
+
+class DashboardView(TemplateView):
+    template_name = "Dashboard.html"
 
 
 class TestView(View):

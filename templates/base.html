@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block meta %}
+
+    {% endblock %}
+    <title>{% block title %}
+
+    {% endblock %}</title>
+
+    <!-- Bootstrap -->
+    {% load static %}
+
+    <link href="{% static "../staticfiles/css/main.css" %}?v=7" rel="stylesheet"/>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"/>
+
+    {% block styles %}
+
+    {% endblock %}
+    {% block resource %}
+
+    {% endblock %}
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+</head>
+
+
+<body style="overflow-x: hidden;">
+<header id="header">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url "dashboard" %}">Stat Reader</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="{% url 'dashboard' %}">Stats</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+{% block content %}{% endblock %}
+
+
+<footer id="footer"></footer>
+
+<!-- for mobile development !-->
+{% block mobile %}
+
+{% endblock %}
+<!--end of mobile !-->
+
+<!-- Scripts -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+
+{% block javascript %}{% endblock %}
+{#<script src="{% static "bootstrap/js/ripples.min.js" %}"></script>#}
+{% block scripts %}{% endblock %}
+
+</body>
+</html>
