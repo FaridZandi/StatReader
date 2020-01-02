@@ -13,20 +13,35 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import settings
-from django.contrib import admin
-from django.contrib.auth.decorators import login_required
-from django.urls import path, include
+# from django.conf import settings
+# from django.contrib import admin
+# from django.contrib.auth.decorators import login_required
 from django.views.generic import RedirectView
 
-from Core.views import TestView, DashboardView
+from django.urls import path, include, re_path
+from Core.views import DashboardView, AddStatView, StatAllView, StatUpdateView
+
+# import Core.views
 
 urlpatterns = [
-    path('test/', TestView.as_view()),
 
-    path('', RedirectView.as_view(url="/dashboard/", permanent=False), name="root"),
+    path('',
+         RedirectView.as_view(url="dashboard/", permanent=False),
+         name="root"),
 
     path('dashboard/',
          DashboardView.as_view(),
          name="dashboard"),
+
+    path('stat/all/',
+         StatAllView.as_view(),
+         name="stat-all"),
+
+    path('stat/update/',
+         StatUpdateView.as_view(),
+         name="stat-update"),
+
+    path('stat/add/',
+         AddStatView.as_view(),
+         name="add-stat"),
 ]

@@ -2,6 +2,58 @@
 {% load static %}
 {% block content %}
 
+    <div class="row">
+        <div class="col-xl-1"></div>
+        <div class="col-xl-10">
+            <div class="row" style="background-color: lightgrey">
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                    #
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    name
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                    value
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    last_updated
+                </div>
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                    subscribers
+                </div>
+                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    page
+                </div>
+            </div>
+            {% for stat in my_stats %}
+                <div class="row">
+                	<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                		{{ forloop.counter }}
+                	</div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    	{{ stat.name }}
+                    </div>
+                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                        {{ stat.last_value }}
+                        {% if stat.prefix %}
+                            {{ stat.prefix }}
+                        {% endif %}
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        {{ stat.modified|timesince }}
+                    </div>
+                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                        {{ stat.get_subscribers_count }}
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <a href="{{ stat.url }}"> {{ stat.url|truncatechars:30 }}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-xl-1"></div>
+    </div>
+
 {% endblock %}
 
 

@@ -13,7 +13,7 @@
     <!-- Bootstrap -->
     {% load static %}
 
-    <link href="{% static "../staticfiles/css/main.css" %}?v=7" rel="stylesheet"/>
+{#    <link href="{% static "../staticfiles/css/main.css" %}?v=7" rel="stylesheet"/>#}
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"/>
 
     {% block styles %}
@@ -37,8 +37,13 @@
             <div class="navbar-header">
                 <a class="navbar-brand" href="{% url "dashboard" %}">Stat Reader</a>
             </div>
+
             <ul class="nav navbar-nav">
-                <li><a href="{% url 'dashboard' %}">Stats</a></li>
+                <li><a href="{% url 'add-stat' %}">Add Stat</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
             </ul>
         </div>
     </nav>
