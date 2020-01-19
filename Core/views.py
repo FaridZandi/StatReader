@@ -46,7 +46,7 @@ class StatUpdateView(View):
         url = stat.url
         query_selector = stat.query_selector
 
-        command = "cd farid/selenium; ./kill-chrome.sh; python3.6 get_value.py '{}' '{}'; ./kill-chrome-sh;".format(url, query_selector)
+        command = "cd farid/selenium; ./kill-chrome.sh; python3.6 get_value.py '{}' '{}'; ./kill-chrome.sh;".format(url, query_selector)
 
         print(command)
 
