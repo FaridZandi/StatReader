@@ -409,17 +409,17 @@
             var val_holder = $(this).parent().parent().find(".stat-value").children().eq(1);
             var time_holder = $(this).parent().parent().find(".stat-time");
 
-            link_holder.html("loading...");
+            link_holder.html('<i class="fa fa-clock-o"></i>');
             $.ajax({
                 url: "{{ host_name }}/stat/update?id=" + stat_id,
                 success: function (Data) {
                     console.log(Data);
-                    link_holder.html("refresh");
+                    link_holder.html('<i class="fa fa-refresh"></i>');
                     val_holder.html(Data.value);
                     time_holder.html("0 minutes ago");
                 },
                 error: function (a, b, c) {
-                    link_holder.html("refresh");
+                    link_holder.html('<i class="fa fa-refresh"></i>');
                 }
             });
         })
