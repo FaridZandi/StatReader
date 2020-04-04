@@ -19,7 +19,7 @@ Including another URLconf
 from django.views.generic import RedirectView
 
 from django.urls import path, include, re_path
-from Core.views import DashboardView, AddStatView, StatAllView, StatUpdateView
+from Core.views import DashboardView, AddStatView, StatAllView, StatUpdateView, StatHistory
 
 # import Core.views
 
@@ -44,4 +44,8 @@ urlpatterns = [
     path('stat/add/',
          AddStatView.as_view(),
          name="add-stat"),
+
+    path('stat/history/',
+         StatHistory.as_view(),
+         name="stat-history"),
 ]

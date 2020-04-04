@@ -1,5 +1,5 @@
 from django.contrib import admin
-from Core.models import Stat
+from Core.models import Stat, StatHistoryDaily
 
 
 # Register your models here.
@@ -14,5 +14,15 @@ class StatAdmin(admin.ModelAdmin):
     class Meta:
         model = Stat
 
+
 admin.site.register(Stat, StatAdmin)
 
+
+class StatHistoryDailyAdmin(admin.ModelAdmin):
+    list_display = ("id", "stat", "value", "date")
+
+    class Meta:
+        model = StatHistoryDaily
+
+
+admin.site.register(StatHistoryDaily, StatHistoryDailyAdmin)

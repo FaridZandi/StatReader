@@ -5,35 +5,39 @@
     <div class="row">
         <div class="col-xl-1"></div>
         <div class="col-xl-10">
-            <div class="row" style="background-color: lightgrey">
+            <div class="row stat-row" style="background-color: lightgrey">
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
                     #
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    name
+                    Name
                 </div>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                    value
+                    Value
                 </div>
                 <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    last_updated
+                    Last Updated
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                    Trends
                 </div>
                 <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                    subscribers
+                    Subs
                 </div>
-                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                    page
+                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                    links
                 </div>
+
             </div>
             {% for stat in my_stats %}
-                <div class="row">
-                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                <div class="row stat-row" data-stat-id="{{ stat.id }}">
+                    <div class="stat-num col-xs-1 col-sm-1 col-md-1 col-lg-1">
                         {{ forloop.counter }}
                     </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <div class="stat-name col-xs-2 col-sm-2 col-md-2 col-lg-2">
                         {{ stat.name }}
                     </div>
-                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                    <div class="stat-value col-xs-1 col-sm-1 col-md-1 col-lg-1">
                         <span>{% if stat.prefix %}
                             {{ stat.prefix }}
                         {% endif %}</span>
@@ -44,21 +48,32 @@
                             {{ stat.suffix }}
                         {% endif %}</span>
                     </div>
-                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <div class="stat-time col-xs-2 col-sm-2 col-md-2 col-lg-2">
                         {{ stat.modified|timesince }} ago
                     </div>
-                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+
+                    <div class="stat-graph col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        <canvas class="stat-canvas">not supported</canvas>
+                    </div>
+
+                    <div class="stat-subs col-xs-1 col-sm-1 col-md-1 col-lg-1">
                         {{ stat.get_subscribers_count }}
                     </div>
-                    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                        <a target="_blank" href="{{ stat.url }}"> {{ stat.url|truncatechars:30 }}</a>
+                    <div class="stat-links col-xs-1 col-sm-1 col-md-1 col-lg-1">
+
+                        <a target="_blank" class="stat-link" href="{{ stat.url }}">
+                            <i class="fa fa-link"></i>
+                        </a>
+                        <a target="_blank" class="stat-link"
+                           href="{{ host_name }}/admin/Core/stat/{{ stat.id }}/change/">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a class="stat-link refresh_button" href="#" data-stat-id="{{ stat.id }}">
+                            <i class="fa fa-refresh"></i>
+                        </a>
+
                     </div>
-                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                        <a href="http://statreader.herokuapp.com/admin/Core/stat/{{ stat.id }}/change/"> edit </a>
-                    </div>
-                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                        <a href="#" data-stat-id="{{ stat.id }}" class="refresh_button"> refresh </a>
-                    </div>
+
 
                 </div>
             {% endfor %}
@@ -70,29 +85,374 @@
 
 
 {% block javascript %}
+    <script>
+        (function () {
+            function Graph(data, canvas, options) {
+                this.options = {
+                    paddingBottom: 0,
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    paddingTop: 0,
+                    showCircle: false,
+                    circle: "#55AA77",
+                    circleSize: 4,
+                    background: "#FFFFFF",
+                    showZeroLine: false,
+                    centerZero: false,
+                    zeroLineColor: "#EEE",
+                    lineColor: "#C5C5C5",
+                    lineWidth: 3,
+                    showBounds: false,
+                    bounds: "#8888EE",
+                    boundsHeight: 14,
+                    boundsFont: "Arial",
+                    showLegend: false,
+                    legend: "#8888EE",
+                    legendHeight: 14,
+                    legendFont: "Arial",
+                };
+
+                if (typeof data !== 'object' && !Array.isArray(data)) throw new Error('Data is not an array');
+                if (!canvas || !canvas.nodeName || canvas.nodeName !== "CANVAS") throw new Error('Canvas not defined');
+
+
+                this.data = !!data.data ? data.data : data;
+                this.legend = !!data.data ? data.legend : !1;
+                this.canvas = canvas;
+                this.context = canvas.getContext('2d');
+
+                if (options) {
+                    for (var key in options) {
+                        if (options.hasOwnProperty(key)) this.options[key] = options[key];
+                    }
+                }
+
+                this.init();
+                this.draw();
+            }
+
+            /**
+             * Init graph
+             */
+            Graph.prototype.init = function () {
+                var self = this;
+
+                if (self.options.parentSize) {
+                    self.canvas.height = self.canvas.parentElement.offsetHeight;
+                    self.canvas.width = self.canvas.parentElement.offsetWidth;
+                }
+
+                if (self.options.showLegend) {
+                    self.options.paddingLeft = self.options.paddingLeft || self.options.legendHeight * 2;
+                    self.options.paddingRight = self.options.paddingRight || self.options.legendHeight * 2;
+                    self.options.paddingBottom = self.options.paddingBottom || self.options.legendHeight * 2.5;
+                }
+
+                if (self.options.showBounds) {
+                    self.options.paddingLeft = self.options.paddingLeft || self.options.boundsHeight / 1.4;
+                    self.options.paddingTop = self.options.paddingTop || self.options.boundsHeight * 1.4;
+                    self.options.paddingBottom = self.options.paddingBottom || self.options.boundsHeight * 1.4;
+                }
+
+                if (self.options.showCircle) {
+                    self.options.paddingRight = self.options.paddingRight || self.options.circleSize;
+                    self.options.paddingTop = self.options.paddingTop || self.options.circleSize;
+                    self.options.paddingBottom = self.options.paddingBottom || self.options.circleSize;
+                }
+
+
+                self.options.paddingTop = self.options.paddingTop || self.options.lineWidth;
+                self.options.paddingBottom = self.options.paddingBottom || self.options.lineWidth;
+            }
+
+            /**
+             * Draw the graph
+             */
+            Graph.prototype.draw = function () {
+                var self = this;
+
+                self.drawBackground();
+                self.computeScale();
+                self.drawMiddle();
+                self.drawScale();
+                self.drawData();
+                self.drawCircle();
+                self.drawBounds();
+                self.drawLegend();
+            };
+
+            /**
+             * Draw canvas brackground
+             */
+            Graph.prototype.drawBackground = function () {
+                this.context.fillStyle = this.options.background;
+                this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            };
+
+            /**
+             * Compute scale for given canvas size
+             */
+            Graph.prototype.computeScale = function () {
+                var self = this,
+                    height = self.canvas.height,
+                    width = self.canvas.width;
+
+                self.maxPositive = Math.max.apply(null, self.data);
+                self.maxNegative = Math.min.apply(null, self.data);
+
+                if (self.maxPositive == self.maxNegative) {
+                    if (self.maxPositive == 0) self.maxPositive = 1;
+                    if (self.maxPositive > 0) self.maxNegative = 0;
+                    if (self.maxPositive < 0) self.maxPositive = 0;
+                }
+
+                self.maxPositive = Math.abs(self.maxPositive);
+                self.maxNegative = Math.abs(self.maxNegative);
+                self.max = Math.max(self.maxPositive, self.maxNegative);
+
+                height -= self.options.paddingTop + self.options.paddingBottom;
+                width -= self.options.paddingLeft + self.options.paddingRight;
+
+                self.horizontalScale = width / (self.data.length - 1);
+
+                if (self.options.centerZero) {
+                    self.middle = Math.round(height / 2);
+                    self.verticalScale = self.middle / self.max;
+                } else {
+                    self.verticalScale = height / (self.maxPositive - self.maxNegative);
+                    self.middle = Math.round(self.maxPositive * self.verticalScale);
+                }
+            };
+
+            /**
+             * Draw middle line of a graph
+             */
+            Graph.prototype.drawMiddle = function () {
+                var self = this;
+
+                if (!self.options.showZeroLine) return;
+
+                self.context.moveTo(self.options.paddingLeft, self.middle + self.options.paddingTop);
+                self.context.lineTo(self.canvas.width - self.options.paddingRight, self.middle + self.options.paddingTop);
+                self.context.strokeStyle = self.options.zeroLineColor;
+                self.context.stroke();
+            };
+
+            /**
+             * Draw scale line
+             */
+            Graph.prototype.drawScale = function () {
+                var self = this;
+
+                if (!self.options.showBounds) return;
+
+                self.context.moveTo(self.options.paddingLeft, self.options.paddingTop);
+                self.context.lineTo(self.options.paddingLeft, self.canvas.height - self.options.paddingBottom);
+                self.context.strokeStyle = self.options.zeroLineColor;
+                self.context.stroke();
+            };
+
+            /**
+             * Draw data line
+             */
+            Graph.prototype.drawData = function () {
+                var self = this,
+                    i = self.data.length - 2;
+
+                self.context.strokeStyle = self.options.lineColor;
+                self.context.lineWidth = self.options.lineWidth;
+
+                self.context.beginPath();
+                self.context.moveTo.apply(self.context, self.getPointCoordinates(self.data.length - 1));
+
+                for (; i >= 0; i--) {
+                    self.context.lineTo.apply(self.context, self.getPointCoordinates(i));
+                }
+
+                self.context.stroke();
+            };
+
+            /**
+             * Compute coordinates for asked data index
+             * @param  {index} index
+             * @return {array}
+             */
+            Graph.prototype.getPointCoordinates = function (index) {
+                return [
+                    this.options.paddingLeft + (index * this.horizontalScale),
+                    (this.middle + this.options.paddingTop) - (this.verticalScale * this.data[index])
+                ]
+            };
+
+            /**
+             * Draw circle to the end of the graph
+             */
+            Graph.prototype.drawCircle = function () {
+                var self = this;
+
+                if (!self.options.showCircle) return;
+
+                for (var i = 0; i < self.data.length; i++) {
+                    var lastPoint = self.getPointCoordinates(i);
+
+                    self.context.fillStyle = self.options.circle;
+                    self.context.beginPath();
+                    self.context.arc(lastPoint[0], lastPoint[1], self.options.circleSize, 0, 2 * Math.PI);
+                    self.context.closePath();
+                    self.context.fill();
+                }
+            };
+
+            /**
+             * Draw scale bounds text
+             */
+            Graph.prototype.drawBounds = function () {
+                var self = this;
+
+                if (!self.options.showBounds) return;
+
+                var topBound = self.options.centerZero ? self.max : self.maxPositive,
+                    bottomBound = self.options.centerZero ? self.max : self.maxNegative;
+
+                self.context.font = self.options.boundsHeight + "px " + self.options.boundsFont;
+                self.context.fillStyle = self.options.bounds;
+                self.context.textBaseline = 'middle';
+                self.context.textAlign = 'center';
+                console.log(self.showLegend);
+                self.context.fillText(topBound, self.options.paddingLeft - (self.options.showLegend ? self.options.paddingLeft / 2 : 0), self.options.paddingTop - (self.options.showLegend ? 0 : self.options.boundsHeight));
+                self.context.fillText((bottomBound ? "-" : "") + bottomBound, self.options.paddingLeft - (self.options.showLegend ? self.options.paddingLeft / 2 : 0), self.canvas.height - self.options.paddingBottom + (self.options.showLegend ? 0 : self.options.boundsHeight));
+            };
+
+            /**
+             * Draw graph legend
+             */
+            Graph.prototype.drawLegend = function () {
+                var self = this,
+                    i = self.data.length,
+                    c;
+
+                if (!self.options.showLegend || !self.legend) return;
+
+                self.context.font = self.options.legendHeight + "px " + self.options.legendFont;
+                self.context.fillStyle = self.options.legend;
+                self.context.textBaseline = 'middle';
+                self.context.textAlign = 'center';
+
+                for (; i >= 0; i--) {
+                    c = self.getPointCoordinates(i);
+                    self.context.fillText(self.legend[i], c[0], self.canvas.height - self.options.paddingBottom / 2);
+                }
+
+            };
+            this.Graph = Graph;
+        })(this);
+    </script>
 
     <script>
+        $(document).ready(function () {
+            $(".stat-row").each(function () {
+                var stat_id = $(this).attr("data-stat-id");
+                var canvas = $(this).find(".stat-graph > canvas")[0];
+                console.log(canvas);
+
+                $.ajax({
+                    url: "{{ host_name }}/stat/history?id=" + stat_id,
+                    success: function (Data) {
+                        console.log(Data);
+                        var options = {    // Internal padding for the canvas
+                            paddingBottom: 10,
+                            paddingLeft: 20,
+                            paddingRight: 10,
+                            paddingTop: 10,
+
+                            // Canvas background
+                            background: "#FFFFFF",
+
+                            // Show circle on the last data
+                            showCircle: true,
+                            circle: "#55AA77",
+                            circleSize: 7,
+
+                            // Show the line at zero
+                            {#showZeroLine: true,#}
+                            zeroLineColor: "#EEE",
+
+                            // Color and whidth of the line chart
+                            lineColor: "#8888EE",
+                            lineWidth: 5,
+
+                            // Show the bounds
+                            showBounds: false,
+                            bounds: "#8888EE",
+                            boundsHeight: 20,
+                            boundsFont: "Arial",
+
+                            // Show the legend
+                            showLegend: true,
+                            legend: "#8888EE",
+                            legendHeight: 14,
+                            legendFont: "Arial"
+                        };
+
+                        var chart = new Graph(Data.histories, canvas, options);
+                    },
+                    error: function (a, b, c) {
+                        console.log(a, b, c);
+                    }
+                });
+            })
+        });
+
         $(".refresh_button").click(function () {
             var stat_id = $(this).attr("data-stat-id");
             var link_holder = $(this);
-            var val_holder = $(this).parent().prev().prev().prev().prev().prev().children().eq(1);
-            var time_holder = $(this).parent().prev().prev().prev().prev();
+            var val_holder = $(this).parent().parent().find(".stat-value").children().eq(1);
+            var time_holder = $(this).parent().parent().find(".stat-time");
 
             link_holder.html("loading...");
             $.ajax({
-                url: "https://statreader.herokuapp.com/stat/update?id=" + stat_id,
-                success: function(Data){
+                url: "{{ host_name }}/stat/update?id=" + stat_id,
+                success: function (Data) {
                     console.log(Data);
                     link_holder.html("refresh");
                     val_holder.html(Data.value);
                     time_holder.html("0 minutes ago");
                 },
-                error: function(a, b , c){
+                error: function (a, b, c) {
                     link_holder.html("refresh");
                 }
             });
         })
     </script>
 
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .stat-canvas {
+            height: 50px;
+            border: black solid;
+            border-top-width: 0;
+            border-right-width: 0;
+        }
+
+        .stat-link {
+            margin-right: 3px;
+        }
+
+        .stat-row {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .stat-num,
+        .stat-name,
+        .stat-value,
+        .stat-time,
+        .stat-links,
+        .stat-subs{
+            margin-top:10px;
+        }
+    </style>
 {% endblock %}
 

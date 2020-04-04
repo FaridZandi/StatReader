@@ -11,6 +11,8 @@ from paramiko import SSHClient, AutoAddPolicy
 
 from Core.models import Stat
 
+from django.conf import settings
+
 
 class DashboardView(TemplateView):
     template_name = "Dashboard.html"
@@ -22,6 +24,7 @@ class DashboardView(TemplateView):
         #     context["my_stats"] = self.request.user.subscribed_stats.all()
         # else:
         context["my_stats"] = Stat.objects.all()
+        context["host_name"] = settings.HOST_URL
 
         return context
 
@@ -46,21 +49,24 @@ class StatUpdateView(View):
         url = stat.url
         query_selector = stat.query_selector
 
-        command = "cd farid/selenium; ./kill-chrome.sh; python3.6 get_value.py '{}' '{}'; ./kill-chrome.sh;".format(url, query_selector)
-
-        print(command)
+        command = "cd farid/selenium; " \
+                  "./kill-chrome.sh; " \
+                  "python3.6 get_value.py '{}' '{}'; " \
+                  "./kill-chrome.sh;".format(url, query_selector)
 
         client = SSHClient()
 
         client.set_missing_host_key_policy(AutoAddPolicy())
         client.load_system_host_keys()
-        client.connect('213.233.180.18', port=10147, username="amirhossein", password="frisbe")
-        stdin, stdout, stderr = client.exec_command(command)
+        client.connect('213.233.180.18',
+                       port=10147,
+                       username="amirhossein",
+                       password="frisbe")
 
+        stdin, stdout, stderr = client.exec_command(command)
         value = stdout.read().decode('utf-8')[:-1]
 
-        stat.last_value = value
-        stat.save()
+        stat.update_value(value)
 
         return JsonResponse({"success": True, "value": value}, safe=False)
 
@@ -68,3 +74,17 @@ class StatUpdateView(View):
 class AddStatView(TemplateView):
     template_name = "add-stat.html"
 
+
+class StatHistory(View):
+
+    def get(self, request):
+        stat_id = int(self.request.GET.get("id"))
+        stat = Stat.objects.get(id=stat_id)
+
+        histories = stat.stat_histories.all()[0:7]
+        print(histories)
+
+        result = {"id": stat_id,
+                  "histories": [history.value for history in histories]}
+
+        return JsonResponse(result)
