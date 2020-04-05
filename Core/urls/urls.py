@@ -16,6 +16,7 @@ Including another URLconf
 # from django.conf import settings
 # from django.contrib import admin
 # from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView
 
 from django.urls import path, include, re_path
@@ -38,7 +39,7 @@ urlpatterns = [
          name="stat-all"),
 
     path('stat/update/',
-         StatUpdateView.as_view(),
+         csrf_exempt(StatUpdateView.as_view()),
          name="stat-update"),
 
     path('stat/add/',

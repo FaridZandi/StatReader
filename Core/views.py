@@ -1,18 +1,12 @@
-from django.shortcuts import render
-
-# Create your views here.
-
+import json
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
-
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, CreateView
 from paramiko import SSHClient, AutoAddPolicy
-
 from Core.models import Stat, StatHistoryDaily, StatHistoryHourly
-
 from django.conf import settings
-import re
 
 
 class DashboardView(TemplateView):
@@ -39,11 +33,27 @@ class StatAllView(View):
                 "url": stat.url,
                 "query_selector": stat.query_selector
             })
-
         return JsonResponse(result, safe=False)
 
 
 class StatUpdateView(View):
+    @csrf_exempt
+    def post(self, request):
+        data = request.POST
+        if "password" not in data or data["password"] != "masalansecure":
+            return JsonResponse({"success": False})
+
+        if "id" not in data or "value" not in data:
+            return JsonResponse({"success": False})
+        print(int(data["id"]))
+
+        stat = Stat.objects.get(id=int(data["id"]))
+        value = data["value"]
+
+        stat.update_value(value)
+        return JsonResponse({"success": True})
+
+
     def get(self, request):
         stat_id = int(self.request.GET.get("id"))
 
@@ -70,7 +80,6 @@ class StatUpdateView(View):
         value = stdout.read().decode('utf-8')[:-1]
 
         stat.update_value(value)
-
         return JsonResponse({"success": True, "value": value}, safe=False)
 
 
