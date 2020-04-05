@@ -9,9 +9,10 @@ from django.views import View
 from django.views.generic import TemplateView, CreateView
 from paramiko import SSHClient, AutoAddPolicy
 
-from Core.models import Stat
+from Core.models import Stat, StatHistoryDaily, StatHistoryHourly
 
 from django.conf import settings
+import re
 
 
 class DashboardView(TemplateView):
@@ -24,20 +25,22 @@ class DashboardView(TemplateView):
         #     context["my_stats"] = self.request.user.subscribed_stats.all()
         # else:
         context["my_stats"] = Stat.objects.all()
-        context["host_name"] = settings.HOST_URL
+        context["host_url"] = settings.HOST_URL
 
         return context
 
 
 class StatAllView(View):
     def get(self, request):
-        all_stat = Stat.objects.all()
-        ids = []
+        result = []
+        for stat in Stat.objects.all():
+            result.append({
+                "id": stat.id,
+                "url": stat.url,
+                "query_selector": stat.query_selector
+            })
 
-        for stat in all_stat:
-            ids.append(str(stat.id))
-
-        return JsonResponse(",".join(ids), safe=False)
+        return JsonResponse(result, safe=False)
 
 
 class StatUpdateView(View):
@@ -81,10 +84,10 @@ class StatHistory(View):
         stat_id = int(self.request.GET.get("id"))
         stat = Stat.objects.get(id=stat_id)
 
-        histories = stat.stat_histories.all()[0:7]
-        print(histories)
-
-        result = {"id": stat_id,
-                  "histories": [history.value for history in histories]}
+        result = {
+            "id": stat_id,
+            "histories_daily": StatHistoryDaily.get_values(stat),
+            "histories_hourly": StatHistoryHourly.get_values(stat)
+        }
 
         return JsonResponse(result)

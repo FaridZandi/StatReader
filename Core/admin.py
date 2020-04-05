@@ -1,5 +1,5 @@
 from django.contrib import admin
-from Core.models import Stat, StatHistoryDaily
+from Core.models import Stat, StatHistoryDaily, StatHistoryHourly
 
 
 # Register your models here.
@@ -26,3 +26,13 @@ class StatHistoryDailyAdmin(admin.ModelAdmin):
 
 
 admin.site.register(StatHistoryDaily, StatHistoryDailyAdmin)
+
+
+class StatHistoryHourlyAdmin(admin.ModelAdmin):
+    list_display = ("id", "stat", "value", "hour")
+
+    class Meta:
+        model = StatHistoryHourly
+
+
+admin.site.register(StatHistoryHourly, StatHistoryHourlyAdmin)
