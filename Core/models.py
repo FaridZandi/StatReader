@@ -86,8 +86,7 @@ class StatHistoryHourly(models.Model):
 
         one_hour = timezone.timedelta(hours=1)
         first_hour = histories_hourly[0].hour
-        last_hour = timezone.now()
-        last_hour = last_hour.replace(minute=0, second=0, microsecond=0)
+        last_hour = histories_hourly[len(histories_hourly) - 1].hour
 
         current_hour = first_hour
         histories_index = 0
@@ -163,7 +162,7 @@ class StatHistoryDaily(models.Model):
 
         one_day = timezone.timedelta(days=1)
         first_day = histories_daily[0].date
-        last_day = timezone.now().date()
+        last_day = histories_daily[len(histories_daily) - 1].date
 
         current_day = first_day
         histories_index = 0
