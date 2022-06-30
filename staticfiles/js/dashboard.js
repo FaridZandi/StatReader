@@ -46,7 +46,6 @@ function update_graphs(row){
         success: function (Data) {
             console.log(Data);
             val_holder.html(Data.last_value);
-            time_holder.html("0 minutes ago");
             new Graph(Data.histories_hourly, canvas_hourly, options);
             new Graph(Data.histories_daily, canvas_daily, options);
         },
@@ -72,9 +71,11 @@ $(".refresh_button").click(function () {
         url: HOST_URL + "/stat/update?id=" + stat_id,
         success: function (Data) {
             link_holder.html('<i class="fa fa-refresh"></i>');
+            time_holder.html("0 minutes ago");
             update_graphs(row);
         },
         error: function (a, b, c) {
+            alert(a,b,c);
             link_holder.html('<i class="fa fa-refresh"></i>');
         }
     });
