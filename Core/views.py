@@ -99,6 +99,7 @@ class StatHistory(View):
 
         result = {
             "id": stat_id,
+            "last_value": stat.last_value,
             "histories_daily": StatHistoryDaily.get_values(stat),
             "histories_hourly": StatHistoryHourly.get_values(stat)
         }

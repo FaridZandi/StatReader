@@ -38,11 +38,15 @@ function update_graphs(row){
     var stat_id = $(row).attr("data-stat-id");
     var canvas_hourly = $(row).find(".stat-graph-hourly > canvas")[0];
     var canvas_daily = $(row).find(".stat-graph-daily > canvas")[0];
+    var val_holder = $(row).find(".stat-value").children().eq(1);
+    var time_holder = $(row).find(".stat-time");
 
     $.ajax({
         url: HOST_URL + "/stat/history?id=" + stat_id,
         success: function (Data) {
             console.log(Data);
+            val_holder.html(Data.last_value);
+            time_holder.html("0 minutes ago");
             new Graph(Data.histories_hourly, canvas_hourly, options);
             new Graph(Data.histories_daily, canvas_daily, options);
         },
@@ -62,16 +66,12 @@ $(".refresh_button").click(function () {
     var stat_id = $(this).attr("data-stat-id");
     var link_holder = $(this);
     var row = $(this).parent().parent();
-    var val_holder = row.find(".stat-value").children().eq(1);
-    var time_holder = row.find(".stat-time");
-
     link_holder.html('<i class="fa fa-clock-o"></i>');
+
     $.ajax({
         url: HOST_URL + "/stat/update?id=" + stat_id,
         success: function (Data) {
             link_holder.html('<i class="fa fa-refresh"></i>');
-            val_holder.html(Data.value);
-            time_holder.html("0 minutes ago");
             update_graphs(row);
         },
         error: function (a, b, c) {
