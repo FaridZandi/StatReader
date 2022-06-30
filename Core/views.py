@@ -59,27 +59,32 @@ class StatUpdateView(View):
 
         stat = Stat.objects.get(id=stat_id)
 
+        uid = stat.id
         url = stat.url
         query_selector = stat.query_selector
 
-        command = "cd farid/selenium; " \
-                  "./kill-chrome.sh; " \
-                  "python3.6 get_value.py '{}' '{}'; " \
-                  "./kill-chrome.sh;".format(url, query_selector)
+        command = "cd crawler; " \
+                  "python3 get_value.py '{}' '{}' {};".format(url, query_selector)
+
+        step_1_command = "ssh sim-02 \"{}\"".format(command) 
+
 
         client = SSHClient()
 
         client.set_missing_host_key_policy(AutoAddPolicy())
         client.load_system_host_keys()
-        client.connect('213.233.180.18',
-                       port=10147,
-                       username="amirhossein",
-                       password="frisbe")
+        client.connect('syslab.cs.toronto.edu',
+                       port=22,
+                       username="faridzandi",
+                       password="applebanana456")
 
         stdin, stdout, stderr = client.exec_command(command)
-        value = stdout.read().decode('utf-8')[:-1]
 
-        stat.update_value(value)
+        value = stdout.read().decode('utf-8')[:-1]
+        print(value) 
+
+        # stat.update_value(value)
+
         return JsonResponse({"success": True, "value": value}, safe=False)
 
 
@@ -88,7 +93,6 @@ class AddStatView(TemplateView):
 
 
 class StatHistory(View):
-
     def get(self, request):
         stat_id = int(self.request.GET.get("id"))
         stat = Stat.objects.get(id=stat_id)
