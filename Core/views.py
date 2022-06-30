@@ -64,7 +64,7 @@ class StatUpdateView(View):
         query_selector = stat.query_selector
 
         command = "cd crawler; " \
-                  "python3 get_value.py '{}' '{}' {};".format(url, query_selector)
+                  "python3 get_value.py '{}' '{}' {};".format(url, query_selector, uid)
 
         step_1_command = "ssh sim-02 \"{}\"".format(command) 
 
