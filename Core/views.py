@@ -78,7 +78,7 @@ class StatUpdateView(View):
                        username="faridzandi",
                        password="applebanana456")
 
-        stdin, stdout, stderr = client.exec_command(command)
+        stdin, stdout, stderr = client.exec_command(step_1_command)
 
         value = stdout.read().decode('utf-8')[:-1]
         print(value) 
