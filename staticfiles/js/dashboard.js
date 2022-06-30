@@ -39,7 +39,6 @@ function update_graphs(row){
     var canvas_hourly = $(row).find(".stat-graph-hourly > canvas")[0];
     var canvas_daily = $(row).find(".stat-graph-daily > canvas")[0];
     var val_holder = $(row).find(".stat-value").children().eq(1);
-    var time_holder = $(row).find(".stat-time");
 
     $.ajax({
         url: HOST_URL + "/stat/history?id=" + stat_id,
@@ -66,6 +65,7 @@ $(".refresh_button").click(function () {
     var link_holder = $(this);
     var row = $(this).parent().parent();
     link_holder.html('<i class="fa fa-clock-o"></i>');
+    var time_holder = row.find(".stat-time");
 
     $.ajax({
         url: HOST_URL + "/stat/update?id=" + stat_id,
